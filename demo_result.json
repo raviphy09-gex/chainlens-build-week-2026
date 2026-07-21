@@ -1,0 +1,60 @@
+{
+  "project": "ChainLens: Explainable Options Decision Auditor",
+  "demo_title": "Verified 2026-07-08 Bearish Pre-Break Replay",
+  "date_key": "20260708",
+  "mode": "VERIFIED_HISTORICAL_REPLAY",
+  "layer_name": "SUPER_BEARISH_MOMENTUM_LAYER_V1",
+  "paper_only": true,
+  "real_orders_allowed": false,
+  "sample_data": false,
+  "timeline": [
+    {
+      "time": "13:21:35",
+      "spot": 24219.2,
+      "vix": 12.22,
+      "regime": "BEARISH_STRUCTURE_BUILDING",
+      "signal": "ARMED_PREBREAK_EARLY",
+      "decision": "WATCH_BEARISH_PREBREAK",
+      "pin_risk": null,
+      "confidence": null,
+      "bearish_pressure": null,
+      "bullish_pressure": null,
+      "support": 24200.0,
+      "resistance": "N/A",
+      "target": "N/A",
+      "explanation": "The verified historical replay has entered its early bearish pre-break state. This is an armed warning, not yet a confirmed momentum signal."
+    },
+    {
+      "time": "13:38:11",
+      "spot": 24206.5,
+      "vix": 12.27,
+      "regime": "BEARISH_PREBREAK_STRONG",
+      "signal": "ARMED_PREBREAK_STRONG",
+      "decision": "WAIT_FOR_SUPPORT_BREAK_CONFIRMATION",
+      "pin_risk": null,
+      "confidence": null,
+      "bearish_pressure": null,
+      "bullish_pressure": null,
+      "support": 24200.0,
+      "resistance": "N/A",
+      "target": "N/A",
+      "explanation": "The verified replay has strengthened from early pre-break to ARMED_PREBREAK_STRONG. The system is identifying bearish structure before confirmation while retaining the support-break requirement."
+    },
+    {
+      "time": "13:47:15",
+      "spot": 24146.15,
+      "vix": 12.55,
+      "regime": "BEARISH_MOMENTUM_CONFIRMED",
+      "signal": "CONFIRMED_MOMENTUM_ADDON",
+      "decision": "BEARISH_MOMENTUM_CONFIRMED",
+      "pin_risk": null,
+      "confidence": null,
+      "bearish_pressure": null,
+      "bullish_pressure": null,
+      "support": 24200.0,
+      "resistance": "N/A",
+      "target": "N/A",
+      "explanation": "The same 2026-07-08 historical replay has progressed to CONFIRMED_MOMENTUM_ADDON. This is the confirmation stage following the earlier pre-break warnings."
+    }
+  ]
+}
