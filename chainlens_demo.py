@@ -187,17 +187,17 @@ button{
 <div class="metrics">
 <div class="metric">
 <div class="label">REPLAY TIME</div>
-<div class="value" id="time">--</div>
+<div class="value" id="time">N/A</div>
 </div>
 
 <div class="metric">
 <div class="label">NIFTY SPOT</div>
-<div class="value" id="spot">--</div>
+<div class="value" id="spot">N/A</div>
 </div>
 
 <div class="metric">
 <div class="label">INDIA VIX</div>
-<div class="value" id="vix">--</div>
+<div class="value" id="vix">N/A</div>
 </div>
 </div>
 
@@ -205,56 +205,56 @@ button{
 
 <div class="regime">
 <div class="label">MARKET STRUCTURE</div>
-<div id="regime">--</div>
-<div id="signal">--</div>
+<div id="regime">N/A</div>
+<div id="signal">N/A</div>
 <br>
-<div id="decision">--</div>
+<div id="decision">N/A</div>
 </div>
 
 <div class="row">
 <div>Pin Risk</div>
 <div class="track"><div id="pinbar" class="bar pin"></div></div>
-<div id="pin">--</div>
+<div id="pin">N/A</div>
 </div>
 
 <div class="row">
 <div>Confidence</div>
 <div class="track"><div id="confbar" class="bar conf"></div></div>
-<div id="confidence">--</div>
+<div id="confidence">N/A</div>
 </div>
 
 <div class="row">
 <div>Bearish Pressure</div>
 <div class="track"><div id="bearbar" class="bar bear"></div></div>
-<div id="bear">--</div>
+<div id="bear">N/A</div>
 </div>
 
 <div class="row">
 <div>Bullish Pressure</div>
 <div class="track"><div id="bullbar" class="bar bull"></div></div>
-<div id="bull">--</div>
+<div id="bull">N/A</div>
 </div>
 
 <div class="levels">
 <div class="level">
 <div class="label">SUPPORT / GATE</div>
-<div class="value" id="support">--</div>
+<div class="value" id="support">N/A</div>
 </div>
 
 <div class="level">
 <div class="label">RESISTANCE</div>
-<div class="value" id="resistance">--</div>
+<div class="value" id="resistance">N/A</div>
 </div>
 
 <div class="level">
 <div class="label">TARGET</div>
-<div class="value" id="target">--</div>
+<div class="value" id="target">N/A</div>
 </div>
 </div>
 
 <div class="explain">
 <div class="label">WHY CHAINLENS SAYS THIS</div>
-<p id="explanation">--</p>
+<p id="explanation">N/A</p>
 </div>
 
 </div>
@@ -284,36 +284,43 @@ let timer=null;
 
 function id(x){return document.getElementById(x)}
 
+function display(value, suffix=""){
+    return (value===null||value===undefined||value==="") ? "N/A" : value+suffix;
+}
+
 function bar(name,value){
-    id(name).style.width=value+"%"
+    const width=(typeof value==="number"&&Number.isFinite(value))
+        ? Math.min(100,Math.max(0,value))
+        : 0;
+    id(name).style.width=width+"%"
 }
 
 function render(){
     const x=data.timeline[index];
 
-    id("time").innerText=x.time;
-    id("spot").innerText=(x.spot===null||x.spot===undefined)?"N/A":x.spot;
-    id("vix").innerText=(x.vix===null||x.vix===undefined)?"N/A":x.vix;
+    id("time").innerText=display(x.time);
+    id("spot").innerText=display(x.spot);
+    id("vix").innerText=display(x.vix);
 
-    id("regime").innerText=x.regime;
-    id("signal").innerText=x.signal;
-    id("decision").innerText=x.decision;
+    id("regime").innerText=display(x.regime);
+    id("signal").innerText=display(x.signal);
+    id("decision").innerText=display(x.decision);
 
-    id("pin").innerText=(x.pin_risk===null||x.pin_risk===undefined)?"N/A":x.pin_risk+"%";
-    id("confidence").innerText=(x.confidence===null||x.confidence===undefined)?"N/A":x.confidence+"%";
-    id("bear").innerText=(x.bearish_pressure===null||x.bearish_pressure===undefined)?"N/A":x.bearish_pressure+"%";
-    id("bull").innerText=(x.bullish_pressure===null||x.bullish_pressure===undefined)?"N/A":x.bullish_pressure+"%";
+    id("pin").innerText=display(x.pin_risk,"%");
+    id("confidence").innerText=display(x.confidence,"%");
+    id("bear").innerText=display(x.bearish_pressure,"%");
+    id("bull").innerText=display(x.bullish_pressure,"%");
 
-    bar("pinbar",x.pin_risk||0);
-    bar("confbar",x.confidence||0);
-    bar("bearbar",x.bearish_pressure||0);
-    bar("bullbar",x.bullish_pressure||0);
+    bar("pinbar",x.pin_risk);
+    bar("confbar",x.confidence);
+    bar("bearbar",x.bearish_pressure);
+    bar("bullbar",x.bullish_pressure);
 
-    id("support").innerText=x.support;
-    id("resistance").innerText=x.resistance;
-    id("target").innerText=x.target;
+    id("support").innerText=display(x.support);
+    id("resistance").innerText=display(x.resistance);
+    id("target").innerText=display(x.target);
 
-    id("explanation").innerText=x.explanation;
+    id("explanation").innerText=display(x.explanation);
 
     document.querySelectorAll(".step").forEach((e,i)=>{
         e.classList.toggle("active",i===index);
@@ -369,11 +376,21 @@ function autoPlay(){
 }
 
 fetch("/api/state")
-.then(r=>r.json())
+.then(r=>{
+    if(!r.ok) throw new Error(`Replay request failed: ${r.status}`);
+    return r.json();
+})
 .then(x=>{
+    if(!Array.isArray(x.timeline)||x.timeline.length===0){
+        throw new Error("Replay timeline is empty or invalid");
+    }
     data=x;
     buildTimeline();
     render();
+})
+.catch(error=>{
+    id("timeline").innerText="Replay unavailable";
+    console.error(error);
 });
 </script>
 
@@ -399,7 +416,7 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         if self.path == "/api/state":
-            payload = DATA.read_text()
+            payload = DATA.read_text(encoding="utf-8")
             self.send_data(payload, "application/json; charset=utf-8")
             return
 
@@ -415,7 +432,7 @@ if __name__ == "__main__":
     if not DATA.exists():
         raise SystemExit("demo_result.json missing")
 
-    data = json.loads(DATA.read_text())
+    data = json.loads(DATA.read_text(encoding="utf-8"))
 
     if data.get("real_orders_allowed") is not False:
         raise SystemExit(
